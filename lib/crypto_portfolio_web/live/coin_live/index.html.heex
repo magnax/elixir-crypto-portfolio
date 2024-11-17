@@ -1,0 +1,42 @@
+<.header>
+  Listing Coins
+  <:actions>
+    <.link patch={~p"/coins/new"}>
+      <.button>New Coin</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="coins"
+  rows={@streams.coins}
+  row_click={fn {_id, coin} -> JS.navigate(~p"/coins/#{coin}") end}
+>
+  <:col :let={{_id, coin}} label="Name"><%= coin.name %></:col>
+  <:col :let={{_id, coin}} label="Symbol"><%= coin.symbol %></:col>
+  <:action :let={{_id, coin}}>
+    <div class="sr-only">
+      <.link navigate={~p"/coins/#{coin}"}>Show</.link>
+    </div>
+    <.link patch={~p"/coins/#{coin}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, coin}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: coin.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="coin-modal" show on_cancel={JS.patch(~p"/coins")}>
+  <.live_component
+    module={CryptoPortfolioWeb.CoinLive.FormComponent}
+    id={@coin.id || :new}
+    title={@page_title}
+    action={@live_action}
+    coin={@coin}
+    patch={~p"/coins"}
+  />
+</.modal>

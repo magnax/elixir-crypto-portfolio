@@ -1,0 +1,27 @@
+<.header>
+  Coin <%= @coin.id %>
+  <:subtitle>This is a coin record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/coins/#{@coin}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit coin</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @coin.name %></:item>
+  <:item title="Symbol"><%= @coin.symbol %></:item>
+</.list>
+
+<.back navigate={~p"/coins"}>Back to coins</.back>
+
+<.modal :if={@live_action == :edit} id="coin-modal" show on_cancel={JS.patch(~p"/coins/#{@coin}")}>
+  <.live_component
+    module={CryptoPortfolioWeb.CoinLive.FormComponent}
+    id={@coin.id}
+    title={@page_title}
+    action={@live_action}
+    coin={@coin}
+    patch={~p"/coins/#{@coin}"}
+  />
+</.modal>
